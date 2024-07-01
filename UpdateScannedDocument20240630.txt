@@ -1,0 +1,33 @@
+Start program on 30/06/2024 09:00:45
+Load config Values
+Connection String is Data Source=NAUT;User ID=lims;Password=lims
+destination is C:\work\PatholabProj\SaveScannedDocuments\BBB
+source is C:\work\PatholabProj\SaveScannedDocuments\AAA
+0 documents found
+Files not found 
+ Exit program
+//////////////////////////////
+Start program on 30/06/2024 09:04:41
+Load config Values
+Connection String is Data Source=NAUT;User ID=lims;Password=lims
+destination is C:\work\PatholabProj\SaveScannedDocuments\BBB
+source is C:\work\PatholabProj\SaveScannedDocuments\AAA
+1 documents found
+Oracle.ManagedDataAccess.Client.OracleException (0x80004005): Connection request timed out
+   at OracleInternal.ConnectionPool.PoolManager`3.Get(ConnectionString csWithDiffOrNewPwd, Boolean bGetForApp, String affinityInstanceName, Boolean bForceMatch)
+   at OracleInternal.ConnectionPool.OraclePoolManager.Get(ConnectionString csWithNewPassword, Boolean bGetForApp, String affinityInstanceName, Boolean bForceMatch)
+   at OracleInternal.ConnectionPool.OracleConnectionDispenser`3.Get(ConnectionString cs, PM conPM, ConnectionString pmCS, SecureString securedPassword, SecureString securedProxyPassword)
+   at Oracle.ManagedDataAccess.Client.OracleConnection.Open()
+   at SaveScannedDocuments.Program.Main(String[] args) in C:\work\PatholabProj\SaveScannedDocuments\Program.cs:line 76
+//////////////////////////////
+Start program on 30/06/2024 09:08:18
+Load config Values
+Connection String is Data Source=NAUT;User ID=lims;Password=lims
+destination is C:\work\PatholabProj\SaveScannedDocuments\BBB
+source is C:\work\PatholabProj\SaveScannedDocuments\AAA
+1 documents found
+Oracle Connected
+Select sdg_id from lims_sys.sdg where Substr(sdg.name,1,1) in ('B','C','P') and name='P000233/17'
+C:\work\PatholabProj\SaveScannedDocuments\AAA\P00023317.pdf moving to C:\work\PatholabProj\SaveScannedDocuments\BBB\2024\06\P00023317_20240630_090823.pdf
+Both queries executed successfully. Transaction committed.
+Process done successfully

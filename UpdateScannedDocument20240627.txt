@@ -1,0 +1,46 @@
+//////////////////////////////
+Start program on 27/06/2024 10:51:55
+Load ini Values
+Connection String is Data Source=NAUT;User ID=lims;Password=lims
+destination is C:\work\PatholabProj\SaveScannedDocuments\BBB
+source is C:\work\PatholabProj\SaveScannedDocuments\AAA
+1 documents found
+Oracle Connected
+Select sdg_id from lims_sys.sdg where Substr(sdg.name,1,1) in ('B','C','P' )  and name='P000233_/17'
+SDG named P000233_/17 does not exist or does not meet the conditions
+Finish
+//////////////////////////////
+Start program on 27/06/2024 10:52:36
+Load ini Values
+Connection String is Data Source=NAUT;User ID=lims;Password=lims
+destination is C:\work\PatholabProj\SaveScannedDocuments\BBB
+source is C:\work\PatholabProj\SaveScannedDocuments\AAA
+1 documents found
+Oracle Connected
+Select sdg_id from lims_sys.sdg where Substr(sdg.name,1,1) in ('B','C','P' )  and name='P000233/17'
+C:\work\PatholabProj\SaveScannedDocuments\AAA\P00023317.pdf moving to C:\work\PatholabProj\SaveScannedDocuments\BBB\2024\06\P00023317_20240627_105243.pdf
+Both queries executed successfully. Transaction committed.
+Proccess done successfully
+Finish
+//////////////////////////////
+Start program on 27/06/2024 10:58:39
+Load ini Values
+Connection String is Data Source=NAUT;User ID=lims;Password=lims
+destination is C:\work\PatholabProj\SaveScannedDocuments\BBB
+source is C:\work\PatholabProj\SaveScannedDocuments\AAA
+1 documents found
+Oracle Connected
+Select sdg_id from lims_sys.sdg where Substr(sdg.name,1,1) in ('B','C','P' )  and name='P000234/17'
+C:\work\PatholabProj\SaveScannedDocuments\AAA\P00023417.pdf moving to C:\work\PatholabProj\SaveScannedDocuments\BBB\2024\06\P00023417_20240627_105844.pdf
+Both queries executed successfully. Transaction committed.
+Proccess done successfully
+Finish
+//////////////////////////////
+Start program on 27/06/2024 10:59:43
+Load ini Values
+Connection String is Data Source=NAUT;User ID=lims;Password=lims
+destination is C:\work\PatholabProj\SaveScannedDocuments\BBB
+source is C:\work\PatholabProj\SaveScannedDocuments\AAA
+0 documents found
+Files not found 
+ Exit program

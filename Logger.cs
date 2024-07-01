@@ -50,8 +50,7 @@ namespace SaveScannedDocuments
             {
                 using (FileStream file = new FileStream(path, FileMode.Append, FileAccess.Write))
                 {
-                    var streamWriter = new StreamWriter(file);
-             //       streamWriter.WriteLine(DateTime.Now);          
+                    var streamWriter = new StreamWriter(file);        
                     streamWriter.WriteLine(errorMessage);
                     streamWriter.Close();
                 }

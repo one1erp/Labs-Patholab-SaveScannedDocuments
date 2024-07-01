@@ -1,0 +1,26 @@
+//////////////////////////////
+Start program on 05/05/2024 14:35:23
+Load ini Values
+Connection String is Data Source=NAUT;User ID=lims;Password=lims
+destination is C:\work\PatholabProj\SaveScannedDocuments\BBB
+source is C:\work\PatholabProj\SaveScannedDocuments\AAA
+1 documents found
+Oracle Connected
+Select sdg_id from lims_sys.sdg where Substr(sdg.name,1,1) in ('B','C','P' )  and name='P000233/17'
+C:\work\PatholabProj\SaveScannedDocuments\AAA\P000233_17.pdf moving to C:\work\PatholabProj\SaveScannedDocuments\BBB\2024\05\P000233_17_20240505_143528.pdf
+Both queries executed successfully. Transaction committed.
+Proccess done successfully
+Finish
+//////////////////////////////
+Start program on 05/05/2024 14:38:12
+Load ini Values
+Connection String is Data Source=NAUT;User ID=lims;Password=lims
+destination is C:\work\PatholabProj\SaveScannedDocuments\BBB
+source is C:\work\PatholabProj\SaveScannedDocuments\AAA
+1 documents found
+Oracle Connected
+Select sdg_id from lims_sys.sdg where Substr(sdg.name,1,1) in ('B','C','P' )  and name='P000233/17'
+C:\work\PatholabProj\SaveScannedDocuments\AAA\P000233_17.pdf moving to C:\work\PatholabProj\SaveScannedDocuments\BBB\2024\05\P000233_17_20240505_143814.pdf
+Both queries executed successfully. Transaction committed.
+Proccess done successfully
+Finish

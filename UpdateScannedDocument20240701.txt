@@ -1,0 +1,53 @@
+//////////////////////////////
+Start program on 01/07/2024 10:56:43
+Load config Values
+Connection String is Data Source=NAUT;User ID=lims;Password=lims
+destination is C:\work\PatholabProj\SaveScannedDocuments\BBB
+source is C:\work\PatholabProj\SaveScannedDocuments\AAA
+1 documents found
+Oracle Connected
+Select sdg_id from lims_sys.sdg where Substr(sdg.name,1,1) in ('B','C','P') and name='P000233/17'
+01/07/2024 10:56:51
+Error 
+Message
+Could not find file 'C:\work\PatholabProj\SaveScannedDocuments\AAA'.
+InnerException
+
+StackTrace
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.File.InternalMove(String sourceFileName, String destFileName, Boolean checkHost)
+   at SaveScannedDocuments.Program.MoveFile(String destination, String source) in C:\work\PatholabProj\SaveScannedDocuments\Program.cs:line 192
+
+///////////////////////////////////////////
+
+C:\work\PatholabProj\SaveScannedDocuments\AAA\P00023317.pdf isn't moving, path will not be updated in DB
+//////////////////////////////
+Start program on 01/07/2024 10:57:29
+Load config Values
+Connection String is Data Source=NAUT;User ID=lims;Password=lims
+destination is C:\work\PatholabProj\SaveScannedDocuments\BBB
+source is C:\work\PatholabProj\SaveScannedDocuments\AAA
+1 documents found
+Oracle Connected
+Select sdg_id from lims_sys.sdg where Substr(sdg.name,1,1) in ('B','C','P') and name='P000233/17'
+//////////////////////////////
+Start program on 01/07/2024 10:58:59
+Load config Values
+Connection String is Data Source=NAUT;User ID=lims;Password=lims
+destination is C:\work\PatholabProj\SaveScannedDocuments\BBB
+source is C:\work\PatholabProj\SaveScannedDocuments\AAA
+1 documents found
+Oracle Connected
+Select sdg_id from lims_sys.sdg where Substr(sdg.name,1,1) in ('B','C','P') and name='P000233/17'
+//////////////////////////////
+Start program on 01/07/2024 10:59:31
+Load config Values
+Connection String is Data Source=NAUT;User ID=lims;Password=lims
+destination is C:\work\PatholabProj\SaveScannedDocuments\BBB
+source is C:\work\PatholabProj\SaveScannedDocuments\AAA
+1 documents found
+Oracle Connected
+Select sdg_id from lims_sys.sdg where Substr(sdg.name,1,1) in ('B','C','P') and name='P000233/17'
+C:\work\PatholabProj\SaveScannedDocuments\AAA\P00023317.pdf moving to C:\work\PatholabProj\SaveScannedDocuments\BBB\2024\07\P00023317_20240701_105934.pdf
+Both queries executed successfully. Transaction committed.
+Process done successfully

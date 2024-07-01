@@ -2,6 +2,9 @@
 using System.Linq;
 using System.IO;
 using Oracle.ManagedDataAccess.Client;
+using System.Reflection;
+using System.Configuration;
+using System.Diagnostics;
 
 
 namespace SaveScannedDocuments
@@ -20,28 +23,19 @@ namespace SaveScannedDocuments
 
             try
             {
-                if (string.IsNullOrEmpty(args[0]))
-                {
-                    return;
-                }
 
-                //Get parameters from ini file
-                IniFile ini = new IniFile(args[0]);
+                var cs = ConfigurationManager.AppSettings["CONNECTIONS"];
+                var source = ConfigurationManager.AppSettings["Source"];
+                var destination = ConfigurationManager.AppSettings["Destination"];
+                LOGPATH = ConfigurationManager.AppSettings["LOGFILE"]+ "UpdateScannedDocument" + DateTime.Now.ToString("yyyyMMdd") + ".txt";
 
-                //Load ini Values
-                var cs = ini.GetString("CONNECTIONS", "ORACLE", "");
-                var source = ini.GetString("FOLDERS", "Source", "");
-                var destination = ini.GetString("FOLDERS", "Destination", "");
-                LOGPATH = ini.GetString("FOLDERS", "LOGFILE", "");
-                LOGPATH = LOGPATH + "UpdateScannedDocument" + DateTime.Now.ToString("yyyyMMdd") + ".txt";
 
                 //Write to log
                 Logger.WriteLogFile(LOGPATH, "//////////////////////////////" + Environment.NewLine +
-                                             "Start program on " + DateTime.Now + Environment.NewLine + "Load ini Values" + Environment.NewLine +
+                                             "Start program on " + DateTime.Now + Environment.NewLine + "Load config Values" + Environment.NewLine +
                                              "Connection String is " + cs + Environment.NewLine +
                                              "destination is " + destination + Environment.NewLine +
                                              "source is " + source);
-
 
 
 
@@ -68,87 +62,62 @@ namespace SaveScannedDocuments
 
                 }
 
-
-
-
-                var debug =
-                    "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.0.239)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=limsprod)));User Id=lims_sys;Password=lims_sys;";
-                
-
-                oraCon = new OracleConnection(cs);
-                oraCon.Open();
-                Logger.WriteLogFile(LOGPATH, "Oracle Connected");
-
-                //            
-                foreach (var path in pdfFiles)
+                using (OracleConnection oraCon = new OracleConnection(cs))
                 {
                     try
                     {
+                        oraCon.Open();
+                        Logger.WriteLogFile(LOGPATH, "Oracle Connected");
 
-                        var fileName = Path.GetFileNameWithoutExtension(path);
-                        var validName = fileName.Replace("_", "/");
-                        string getSdgSql = "Select sdg_id from lims_sys.sdg where Substr(sdg.name,1,1) in ('B','C','P' )  and name='" + validName + "'";
-                        var cmd = new OracleCommand(getSdgSql, oraCon);
-                        var sdgId = cmd.ExecuteScalar();
-
-                        Logger.WriteLogFile(LOGPATH, getSdgSql);
-
-                        if (sdgId != null)
+                        foreach (var path in pdfFiles)
                         {
-                            
-                            string newDestination = MoveFile(destination, path);
-                            if (newDestination != null)
-                            {
-                          
-                                var success = SaveFileDest(sdgId.ToString(), path);
-                                string successMsg = success ? "Proccess done successfully" : "Proccess failed";
-                                Logger.WriteLogFile(LOGPATH, successMsg);
-                            }
-                            else
-                            {
-                                Logger.WriteLogFile(LOGPATH, path + " doesn't moving , path will not be update in DB");
-                            }
-                        }
-                        else
-                        {
-                            string msg = "SDG named " + validName + " does not exist or does not meet the conditions";
-                            Logger.WriteLogFile(LOGPATH, msg);
+                           
+                                var fileName = Path.GetFileNameWithoutExtension(path);
+                                var validName = fileName.Insert(fileName.Length - 2, "/");
+                                string getSdgSql = "Select sdg_id from lims_sys.sdg where Substr(sdg.name,1,1) in ('B','C','P') and name='" + validName + "'";
 
-                        }
-                        if (cmd != null)
-                            cmd.Dispose();
+                                using (var cmd = new OracleCommand(getSdgSql, oraCon))
+                                {
+                                    var sdgId = cmd.ExecuteScalar();
+                                    Logger.WriteLogFile(LOGPATH, getSdgSql);
 
-
+                                    if (sdgId != null)
+                                    {
+                                        string newDestination = MoveFile(destination, path);
+                                        if (newDestination != null)
+                                        {
+                                            var success = SaveFileDest(sdgId.ToString(), newDestination, oraCon);
+                                            string successMsg = success ? "Process done successfully" : "Process failed";
+                                            Logger.WriteLogFile(LOGPATH, successMsg);
+                                        }
+                                        else
+                                        {
+                                            Logger.WriteLogFile(LOGPATH, path + " isn't moving, path will not be updated in DB");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string msg = "SDG named " + validName + " does not exist or does not meet the conditions";
+                                        Logger.WriteLogFile(LOGPATH, msg);
+                                    }
+                                }
+                            }                        
                     }
-                    catch (Exception exu)
+                    catch (Exception ex)
                     {
-
-                        Logger.WriteLogFile(LOGPATH, exu);
-
+                        Logger.WriteLogFile(LOGPATH, ex.ToString());
                     }
                 }
-
-
-                if (oraCon != null)
-                    oraCon.Close();
-
-                Logger.WriteLogFile(LOGPATH, "Finish");
-
 
             }
             catch (Exception ex)
             {
                 Logger.WriteLogFile(LOGPATH, ex);
-
-            }
-            finally
-            {
-
             }
 
         }
 
-        private static bool SaveFileDest(string sdgId, string path)
+        private static bool SaveFileDest(string sdgId, string path, OracleConnection oraCon)
         {
             try
             {
@@ -156,22 +125,24 @@ namespace SaveScannedDocuments
                 {
                     OracleTransaction transaction = oraCon.BeginTransaction();
 
-                    var fileName = Path.GetFileNameWithoutExtension(path);
                     var sdg_attachment_id = string.Empty;
                     string sql = "select lims.sq_U_SDG_ATTACHMENT.nextval from dual";
                     var cmd = new OracleCommand(sql, oraCon);
                     sdg_attachment_id = cmd.ExecuteScalar().ToString();
 
+                    //Create a new record with the received file data in U_SDG_ATTACHMENT table.
                     sql = $"insert into lims_sys.U_SDG_ATTACHMENT(U_SDG_ATTACHMENT_ID, name, version, VERSION_STATUS) values({sdg_attachment_id}, '{DateTime.Now}', 1, 'A')";
                     cmd = new OracleCommand(sql, oraCon);
                     cmd.CommandText = sql;
                     bool success_1 = cmd.ExecuteNonQuery() == 1;
 
+                    //Create a new suitable record in U_SDG_ATTACHMENT_USER table.
                     sql = $"insert into lims_sys.U_SDG_ATTACHMENT_USER(U_SDG_ATTACHMENT_ID, U_SDG_ID, U_TITLE, U_PATH) values({sdg_attachment_id}, {sdgId}, 'הגיע מהממשק', '{path}')";
                     cmd = new OracleCommand(sql, oraCon);
                     cmd.CommandText = sql;
                     bool success_2 = cmd.ExecuteNonQuery() == 1;
 
+                    //only if the two record created, commit and approve the changes.
                     if (success_1 && success_2)
                     {
                         transaction.Commit();
@@ -194,7 +165,9 @@ namespace SaveScannedDocuments
                 return false;
             }
         }
-        private static string MoveFile(string destination, string s)
+
+
+        private static string MoveFile(string destination, string source)
         {
 
             try
@@ -208,12 +181,16 @@ namespace SaveScannedDocuments
                     {
                         Directory.CreateDirectory(destFolder);
                     }
-                    string fileName = Path.GetFileNameWithoutExtension(Path.GetFileName(s)); // Get the file name without extension
-                    string fileExtension = Path.GetExtension(Path.GetFileName(s)); // Get the file extension
+
+                    //change file's name in order to allow several documents for the same SDG.
+                    string fileName = Path.GetFileNameWithoutExtension(Path.GetFileName(source)); // Get the file name without extension
+                    string fileExtension = Path.GetExtension(Path.GetFileName(source)); // Get the file extension
                     string newFileName = fileName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + fileExtension;
+
+
                     newDest = Path.Combine(destFolder, newFileName);
-                    File.Move(s, newDest);
-                    Logger.WriteLogFile(LOGPATH, s + " moving to " + newDest);
+                    File.Move(source, newDest);
+                    Logger.WriteLogFile(LOGPATH, source + " moving to " + newDest);
 
 
                 }
